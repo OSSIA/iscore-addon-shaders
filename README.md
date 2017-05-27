@@ -1,0 +1,2 @@
+Allows to use shaders.
+
