@@ -18,6 +18,8 @@ ShaderView::ShaderView(
 
 void ShaderView::paint_impl(QPainter* painter) const
 {
+  painter->setPen(Qt::white);
+  painter->drawText(boundingRect(), "Shader", QTextOption(Qt::AlignCenter));
 }
 
 }
