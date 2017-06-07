@@ -13,10 +13,8 @@ ProcessModel::ProcessModel(
     metadata().setInstanceName(*this);
     m_fragment =
         R"_(
-        #version 330
-
         uniform float time;
-        uniform float tata = 0;
+        uniform float tata;
         float rand(float n){return fract(sin(n) * 43758.5453123);}
 
         float noise(float p){
@@ -144,8 +142,7 @@ void GLWindow::initializeGL()
 
   shaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
                                          R"_(
-                                         #version 330
-                                         layout(location = 0) in vec3 position;
+                                         uniform vec3 position;
 
                                          void main()
                                          {
@@ -158,10 +155,13 @@ R"_(
  void main(void)
  {
    mainImage(gl_FragColor, gl_FragCoord);
- };
+ }
 )_";
 
   shaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, frag);
+  if(shaderProgram->shaders().empty())
+    return;
+
   shader = shaderProgram->shaders()[1];
 
   shaderProgram->link();
