@@ -14,7 +14,7 @@
 
 namespace Shader
 {
-class PortModel: public QAbstractTableModel
+class PortModel final: public QAbstractTableModel
 {
     const Process::DataflowProcess& m_proc;
     std::vector<Process::Port> m_data;
@@ -36,19 +36,19 @@ class PortModel: public QAbstractTableModel
     }
 
   private:
-    int rowCount(const QModelIndex& parent) const
+    int rowCount(const QModelIndex& parent) const override
     {
       return m_data.size();
     }
 
-    int columnCount(const QModelIndex& parent) const
+    int columnCount(const QModelIndex& parent) const override
     {
       return 2;
     }
 
-    QVariant data(const QModelIndex& index, int role) const
+    QVariant data(const QModelIndex& index, int role) const override
     {
-      auto i = index.row();
+      std::size_t i = index.row();
       auto c = index.column();
 
       if(index.isValid() && i < m_data.size() && c < 2)
@@ -72,9 +72,9 @@ class PortModel: public QAbstractTableModel
       return {};
     }
 
-    bool setData(const QModelIndex& index, const QVariant& value, int role)
+    bool setData(const QModelIndex& index, const QVariant& value, int role) override
     {
-      auto i = index.row();
+      std::size_t i = index.row();
       auto c = index.column();
 
       if(index.isValid() && i < m_data.size() && c < 2)
@@ -102,7 +102,7 @@ class PortModel: public QAbstractTableModel
       return false;
     }
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override
     {
       if(role == Qt::DisplayRole && orientation == Qt::Horizontal)
       {
@@ -116,36 +116,36 @@ class PortModel: public QAbstractTableModel
       }
       return {};
     }
-    QStringList mimeTypes() const
+    QStringList mimeTypes() const override
     {
       return {};
     }
 
-    QMimeData* mimeData(const QModelIndexList& indexes) const
+    QMimeData* mimeData(const QModelIndexList& indexes) const override
     {
       return nullptr;
     }
 
-    bool canDropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) const
+    bool canDropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) const override
     {
       return false;
     }
 
-    bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
+    bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) override
     {
       return false;
     }
 
-    Qt::DropActions supportedDropActions() const
+    Qt::DropActions supportedDropActions() const override
     {
       return {};
     }
-    Qt::DropActions supportedDragActions() const
+    Qt::DropActions supportedDragActions() const override
     {
       return {};
     }
 
-    Qt::ItemFlags flags(const QModelIndex& index) const
+    Qt::ItemFlags flags(const QModelIndex& index) const override
     {
       return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
     }

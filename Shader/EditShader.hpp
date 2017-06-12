@@ -47,7 +47,7 @@ class SetInletData final : public iscore::Command
 {
     ISCORE_COMMAND_DECL(Shader::CommandFactoryName(), SetInletData, "Set inlet data")
     public:
-      SetInletData(const Process::DataflowProcess& model, QString dat, int pos);
+      SetInletData(const Process::DataflowProcess& model, QString dat, std::size_t pos);
 
       void undo() const override;
       void redo() const override;
@@ -58,7 +58,7 @@ class SetInletData final : public iscore::Command
 
     Path<Process::DataflowProcess> m_model;
     QString m_old, m_new;
-    int m_pos;
+    quint64 m_pos;
 
 };
 
@@ -67,7 +67,7 @@ class SetInletAddress final : public iscore::Command
 {
     ISCORE_COMMAND_DECL(Shader::CommandFactoryName(), SetInletAddress, "Set inlet address")
     public:
-      SetInletAddress(const Process::DataflowProcess& model, State::AddressAccessor dat, int pos);
+      SetInletAddress(const Process::DataflowProcess& model, State::AddressAccessor dat, std::size_t pos);
 
       void undo() const override;
       void redo() const override;
@@ -78,7 +78,7 @@ class SetInletAddress final : public iscore::Command
 
     Path<Process::DataflowProcess> m_model;
     State::AddressAccessor m_old, m_new;
-    int m_pos;
+    quint64 m_pos;
 
 };
 }

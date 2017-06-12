@@ -54,15 +54,14 @@ void ProcessExecutor::resume()
 }
 
 ossia::state_element ProcessExecutor::offset(
-    ossia::time_value off)
+    ossia::time_value off, double pos)
 {
   return {};
 }
 
-ossia::state_element ProcessExecutor::state()
+ossia::state_element ProcessExecutor::state(ossia::time_value date, double pos)
 {
-  auto t = parent()->get_date() / parent()->get_nominal_duration();
-  m_window->sig_setValue("time", (float)t);
+  m_window->sig_setValue("time", (float)pos);
 
   for(auto port : m_ports)
   {

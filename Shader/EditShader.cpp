@@ -71,7 +71,7 @@ void AddInlet::deserializeImpl(DataStreamOutput& s)
 
 SetInletData::SetInletData(
         const Process::DataflowProcess& model,
-    QString n, int pos):
+    QString n, std::size_t pos):
     m_model{model}
   , m_old{model.inlets()[pos].customData}
   , m_new{n}
@@ -108,7 +108,7 @@ void SetInletData::deserializeImpl(DataStreamOutput& s)
 
 SetInletAddress::SetInletAddress(
         const Process::DataflowProcess& model,
-    State::AddressAccessor n, int pos):
+    State::AddressAccessor n, std::size_t pos):
     m_model{model}
   , m_old{model.inlets()[pos].address}
   , m_new{n}
