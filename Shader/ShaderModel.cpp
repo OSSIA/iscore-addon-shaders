@@ -124,13 +124,6 @@ GLWindow::GLWindow(ProcessModel& m):
           Qt::QueuedConnection);
 }
 
-static const constexpr QVector3D aQuad[] = {
-  QVector3D( -1.00f,  -1.00f, 1.0f),
-  QVector3D(1.00f, -1.00f, 1.0f),
-  QVector3D( 1.00f, 1.00f, 1.0f),
-  QVector3D( -1.00f, 1.00f, 1.0f)
-};
-
 void GLWindow::initializeGL()
 {  // Initialize OpenGL Backend
   initializeOpenGLFunctions();
@@ -142,11 +135,12 @@ void GLWindow::initializeGL()
 
   shaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
                                          R"_(
-                                         uniform vec3 position;
+                                         #version 330 core
+                                         const vec2 quadVertices[4] = vec2[4]( vec2(-1.0, -1.0), vec2(1.0, -1.0), vec2(-1.0, 1.0), vec2(1.0, 1.0) );
 
                                          void main()
                                          {
-                                         gl_Position = vec4(position, 1.0);
+                                           gl_Position = vec4(quadVertices[gl_VertexID], 0.0, 1.0);
                                          }
                                          )_");
 
@@ -154,12 +148,12 @@ void GLWindow::initializeGL()
 R"_(
  void main(void)
  {
-   mainImage(gl_FragColor, gl_FragCoord);
+  mainImage(gl_FragColor, gl_FragCoord);
  }
 )_";
 
   shaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, frag);
-  if(shaderProgram->shaders().empty())
+  if(shaderProgram->shaders().size() < 2)
     return;
 
   shader = shaderProgram->shaders()[1];
@@ -170,16 +164,10 @@ R"_(
   m_vertex.create();
   m_vertex.bind();
   m_vertex.setUsagePattern(QOpenGLBuffer::StaticDraw);
-  m_vertex.allocate(aQuad, sizeof(aQuad));
-
   m_object.create();
-  m_object.bind();
-  shaderProgram->enableAttributeArray(0);
-  shaderProgram->setAttributeBuffer(0, GL_FLOAT, 0,  3, 12);
-
-  m_object.release();
   m_vertex.release();
   shaderProgram->release();
+  update();
 }
 
 void GLWindow::resizeGL(int w, int h)
@@ -195,6 +183,7 @@ void GLWindow::reload()
 
 void GLWindow::paintGL()
 {
+
   glClear(GL_COLOR_BUFFER_BIT);
   if(m_shaderDirty)
   {
@@ -207,21 +196,25 @@ void GLWindow::paintGL()
   )_";
     shader->compileSourceCode(frag.toUtf8().constData());
     shaderProgram->link();
-
-  }
-  shaderProgram->bind();
-  for(auto& val : m_values)
-  {
-    shaderProgram->setUniformValue(val.first.data(), val.second.get<float>());
+    m_shaderDirty = false;
   }
 
   {
-    m_object.bind();
-    glDrawArrays(GL_QUADS, 0, 4);
+    shaderProgram->bind();
+    for(auto& val : m_values)
+    {
+      shaderProgram->setUniformValue(val.first.data(), val.second.get<float>());
+    }
 
-    m_object.release();
+    {
+      m_object.bind();
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+      m_object.release();
+    }
+    shaderProgram->release();
   }
-  shaderProgram->release();
+  update();
 }
 
 void GLWindow::slt_setValue(std::string s, ossia::value v)
