@@ -13,8 +13,8 @@ class EditShader final : public iscore::Command
         EditShader(const Shader::ProcessModel& model,
                    QString n);
 
-        void undo() const override;
-        void redo() const override;
+        void undo(const iscore::DocumentContext& ctx) const override;
+        void redo(const iscore::DocumentContext& ctx) const override;
 
     protected:
         void serializeImpl(DataStreamInput & s) const override;
@@ -33,8 +33,8 @@ class AddInlet final : public iscore::Command
     public:
       AddInlet(const Process::DataflowProcess& model);
 
-      void undo() const override;
-      void redo() const override;
+      void undo(const iscore::DocumentContext& ctx) const override;
+      void redo(const iscore::DocumentContext& ctx) const override;
 
   private:
     void serializeImpl(DataStreamInput & s) const override;
@@ -49,8 +49,8 @@ class SetInletData final : public iscore::Command
     public:
       SetInletData(const Process::DataflowProcess& model, QString dat, std::size_t pos);
 
-      void undo() const override;
-      void redo() const override;
+      void undo(const iscore::DocumentContext& ctx) const override;
+      void redo(const iscore::DocumentContext& ctx) const override;
 
   private:
     void serializeImpl(DataStreamInput & s) const override;
@@ -69,8 +69,8 @@ class SetInletAddress final : public iscore::Command
     public:
       SetInletAddress(const Process::DataflowProcess& model, State::AddressAccessor dat, std::size_t pos);
 
-      void undo() const override;
-      void redo() const override;
+      void undo(const iscore::DocumentContext& ctx) const override;
+      void redo(const iscore::DocumentContext& ctx) const override;
 
   private:
     void serializeImpl(DataStreamInput & s) const override;
