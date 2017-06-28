@@ -53,12 +53,6 @@ void ProcessExecutor::resume()
 {
 }
 
-ossia::state_element ProcessExecutor::offset(
-    ossia::time_value off, double pos)
-{
-  return {};
-}
-
 ossia::state_element ProcessExecutor::state(ossia::time_value date, double pos)
 {
   m_window->sig_setValue("time", (float)pos);
