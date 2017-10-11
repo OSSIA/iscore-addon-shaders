@@ -1,5 +1,5 @@
-#include "iscore_addon_shader.hpp"
-#include <iscore_addon_shader_commands_files.hpp>
+#include "score_addon_shader.hpp"
+#include <score_addon_shader_commands_files.hpp>
 
 #include <Shader/ShaderFactory.hpp>
 #include <Shader/ShaderExecutor.hpp>
@@ -7,25 +7,25 @@
 #include <Shader/ShaderLocalTree.hpp>
 #include <Shader/ShaderLayerFactory.hpp>
 
-#include <iscore/plugins/customfactory/FactorySetup.hpp>
+#include <score/plugins/customfactory/FactorySetup.hpp>
 
-iscore_addon_shader::iscore_addon_shader()
+score_addon_shader::score_addon_shader()
 {
 
 }
 
-iscore_addon_shader::~iscore_addon_shader()
+score_addon_shader::~score_addon_shader()
 {
 
 }
 
-std::vector<std::unique_ptr<iscore::InterfaceBase> >
-iscore_addon_shader::factories(
-        const iscore::ApplicationContext& ctx,
-        const iscore::InterfaceKey& key) const
+std::vector<std::unique_ptr<score::InterfaceBase> >
+score_addon_shader::factories(
+        const score::ApplicationContext& ctx,
+        const score::InterfaceKey& key) const
 {
     return instantiate_factories<
-            iscore::ApplicationContext,
+            score::ApplicationContext,
         FW<Process::ProcessModelFactory,
            Shader::ProcessFactory>,
         FW<Process::LayerFactory,
@@ -39,7 +39,7 @@ iscore_addon_shader::factories(
     >(ctx, key);
 }
 std::pair<const CommandGroupKey, CommandGeneratorMap>
-iscore_addon_shader::make_commands()
+score_addon_shader::make_commands()
 {
     using namespace Shader;
     std::pair<const CommandGroupKey, CommandGeneratorMap> cmds{
@@ -47,10 +47,10 @@ iscore_addon_shader::make_commands()
         CommandGeneratorMap{}};
 
     using Types = TypeList<
-#include <iscore_addon_shader_commands.hpp>
+#include <score_addon_shader_commands.hpp>
       >;
 
-    for_each_type<Types>(iscore::commands::FactoryInserter{cmds.second});
+    for_each_type<Types>(score::commands::FactoryInserter{cmds.second});
 
     return cmds;
 }

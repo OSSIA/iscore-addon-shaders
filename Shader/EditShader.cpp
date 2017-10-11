@@ -1,5 +1,5 @@
 #include "EditShader.hpp"
-#include <iscore/model/path/PathSerialization.hpp>
+#include <score/model/path/PathSerialization.hpp>
 
 namespace Shader
 {
@@ -12,13 +12,13 @@ EditShader::EditShader(
 {
 }
 
-void EditShader::undo(const iscore::DocumentContext& ctx) const
+void EditShader::undo(const score::DocumentContext& ctx) const
 {
     Shader::ProcessModel& proc = m_model.find(ctx);
     proc.setFragment(m_old);
 }
 
-void EditShader::redo(const iscore::DocumentContext& ctx) const
+void EditShader::redo(const score::DocumentContext& ctx) const
 {
     Shader::ProcessModel& proc = m_model.find(ctx);
     proc.setFragment(m_new);
@@ -35,24 +35,24 @@ void EditShader::deserializeImpl(DataStreamOutput& s)
 }
 
 
-
+/*
 AddInlet::AddInlet(
-        const Process::DataflowProcess& model):
+        const Process::ProcessModel& model):
     m_model{model}
 {
 }
 
-void AddInlet::undo(const iscore::DocumentContext& ctx) const
+void AddInlet::undo(const score::DocumentContext& ctx) const
 {
-  Process::DataflowProcess& proc = m_model.find(ctx);
+  Process::ProcessModel& proc = m_model.find(ctx);
   auto inlets = proc.inlets();
   inlets.resize(inlets.size() - 1);
   proc.setInlets(std::move(inlets));
 }
 
-void AddInlet::redo(const iscore::DocumentContext& ctx) const
+void AddInlet::redo(const score::DocumentContext& ctx) const
 {
-  Process::DataflowProcess& proc = m_model.find(ctx);
+  Process::ProcessModel& proc = m_model.find(ctx);
   auto inlets = proc.inlets();
   inlets.push_back(Process::Port{Process::PortType::Message, "New port", State::AddressAccessor{}});
   proc.setInlets(std::move(inlets));
@@ -70,7 +70,7 @@ void AddInlet::deserializeImpl(DataStreamOutput& s)
 
 
 SetInletData::SetInletData(
-        const Process::DataflowProcess& model,
+        const Process::ProcessModel& model,
     QString n, std::size_t pos):
     m_model{model}
   , m_old{model.inlets()[pos].customData}
@@ -79,17 +79,17 @@ SetInletData::SetInletData(
 {
 }
 
-void SetInletData::undo(const iscore::DocumentContext& ctx) const
+void SetInletData::undo(const score::DocumentContext& ctx) const
 {
-  Process::DataflowProcess& proc = m_model.find(ctx);
+  Process::ProcessModel& proc = m_model.find(ctx);
   auto inlets = proc.inlets();
   inlets[m_pos].customData = m_old;
   proc.setInlets(std::move(inlets));
 }
 
-void SetInletData::redo(const iscore::DocumentContext& ctx) const
+void SetInletData::redo(const score::DocumentContext& ctx) const
 {
-  Process::DataflowProcess& proc = m_model.find(ctx);
+  Process::ProcessModel& proc = m_model.find(ctx);
   auto inlets = proc.inlets();
   inlets[m_pos].customData = m_new;
   proc.setInlets(std::move(inlets));
@@ -107,7 +107,7 @@ void SetInletData::deserializeImpl(DataStreamOutput& s)
 
 
 SetInletAddress::SetInletAddress(
-        const Process::DataflowProcess& model,
+        const Process::ProcessModel& model,
     State::AddressAccessor n, std::size_t pos):
     m_model{model}
   , m_old{model.inlets()[pos].address}
@@ -116,17 +116,17 @@ SetInletAddress::SetInletAddress(
 {
 }
 
-void SetInletAddress::undo(const iscore::DocumentContext& ctx) const
+void SetInletAddress::undo(const score::DocumentContext& ctx) const
 {
-  Process::DataflowProcess& proc = m_model.find(ctx);
+  Process::ProcessModel& proc = m_model.find(ctx);
   auto inlets = proc.inlets();
   inlets[m_pos].address = m_old;
   proc.setInlets(std::move(inlets));
 }
 
-void SetInletAddress::redo(const iscore::DocumentContext& ctx) const
+void SetInletAddress::redo(const score::DocumentContext& ctx) const
 {
-  Process::DataflowProcess& proc = m_model.find(ctx);
+  Process::ProcessModel& proc = m_model.find(ctx);
   auto inlets = proc.inlets();
   inlets[m_pos].address = m_new;
   proc.setInlets(std::move(inlets));
@@ -141,4 +141,5 @@ void SetInletAddress::deserializeImpl(DataStreamOutput& s)
 {
     s >> m_model >> m_old >> m_new >> m_pos;
 }
+*/
 }

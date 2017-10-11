@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.1)
-project(iscore_addon_shader LANGUAGES CXX)
+project(score_addon_shader LANGUAGES CXX)
 
 # General initialization
-iscore_common_setup()
+score_common_setup()
 
 # Source files
 set(HDRS
@@ -19,7 +19,7 @@ set(HDRS
     Shader/ShaderPresenter.hpp
     Shader/ShaderView.hpp
 
-    iscore_addon_shader.hpp
+    score_addon_shader.hpp
 )
 
 set(SRCS
@@ -31,7 +31,7 @@ set(SRCS
     Shader/ShaderPresenter.cpp
     Shader/ShaderView.cpp
 
-    iscore_addon_shader.cpp
+    score_addon_shader.cpp
 )
 
 
@@ -39,10 +39,10 @@ set(SRCS
 add_library(${PROJECT_NAME} ${SRCS} ${HDRS})
 
 # Code generation
-iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS}")
+score_generate_command_list_file(${PROJECT_NAME} "${HDRS}")
 
 # Link
-target_link_libraries(${PROJECT_NAME} PUBLIC iscore_plugin_engine)
+target_link_libraries(${PROJECT_NAME} PUBLIC score_plugin_engine)
 
 # Target-specific options
-setup_iscore_plugin(${PROJECT_NAME})
+setup_score_plugin(${PROJECT_NAME})

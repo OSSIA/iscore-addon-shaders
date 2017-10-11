@@ -1,7 +1,7 @@
 #pragma once
-#include <Process/Dataflow/DataflowProcess.hpp>
+#include <Process/Process.hpp>
 #include <Shader/ShaderMetadata.hpp>
-#include <iscore/model/EntityMap.hpp>
+#include <score/model/EntityMap.hpp>
 #include <QOpenGLWindow>
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
@@ -47,9 +47,9 @@ class GLWindow : public QOpenGLWindow, public QOpenGLFunctions
 };
 
 
-class ProcessModel final : public Process::DataflowProcess
+class ProcessModel final : public Process::ProcessModel
 {
-    ISCORE_SERIALIZE_FRIENDS
+    SCORE_SERIALIZE_FRIENDS
     PROCESS_METADATA_IMPL(Shader::ProcessModel)
 
     Q_OBJECT
@@ -61,7 +61,7 @@ class ProcessModel final : public Process::DataflowProcess
       ~ProcessModel();
     template<typename Impl>
     ProcessModel(Impl& vis, QObject* parent) :
-      Process::DataflowProcess{vis, parent}
+      Process::ProcessModel{vis, parent}
     {
       vis.writeTo(*this);
     }

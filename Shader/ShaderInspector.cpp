@@ -1,9 +1,9 @@
 #include "ShaderInspector.hpp"
 #include <Shader/EditShader.hpp>
 
-#include <iscore/document/DocumentContext.hpp>
-#include <iscore/widgets/MarginLess.hpp>
-#include <iscore/widgets/ClearLayout.hpp>
+#include <score/document/DocumentContext.hpp>
+#include <score/widgets/MarginLess.hpp>
+#include <score/widgets/ClearLayout.hpp>
 #include <State/Expression.hpp>
 #include <ossia/detail/logger.hpp>
 #include <QVBoxLayout>
@@ -13,15 +13,15 @@
 #include <QAbstractTableModel>
 
 namespace Shader
-{
+{/*
 class PortModel final: public QAbstractTableModel
 {
-    const Process::DataflowProcess& m_proc;
+    const Process::ProcessModel& m_proc;
     std::vector<Process::Port> m_data;
     CommandDispatcher<> m_disp;
   public:
-    PortModel(const Process::DataflowProcess& p,
-              const iscore::CommandStackFacade& f):
+    PortModel(const Process::ProcessModel& p,
+              const score::CommandStackFacade& f):
       m_proc{p},
       m_disp{f}
     {
@@ -153,7 +153,7 @@ class PortModel final: public QAbstractTableModel
 
 class DataflowWidget : public QWidget
 {
-    const Process::DataflowProcess& m_proc;
+    const Process::ProcessModel& m_proc;
     QVBoxLayout m_lay;
     PortModel m_model;
     QTableView m_view;
@@ -162,7 +162,7 @@ class DataflowWidget : public QWidget
     CommandDispatcher<> m_disp;
 
   public:
-    DataflowWidget(const Process::DataflowProcess& proc, const iscore::DocumentContext& c):
+    DataflowWidget(const Process::ProcessModel& proc, const score::DocumentContext& c):
       m_proc{proc}
     , m_lay{this}
     , m_model{proc, c.commandStack}
@@ -179,7 +179,7 @@ class DataflowWidget : public QWidget
         m_disp.submitCommand<AddInlet>(m_proc);
       });
 
-      con(proc, &Process::DataflowProcess::inletsChanged,
+      con(proc, &Process::ProcessModel::inletsChanged,
           this, &DataflowWidget::recreate);
       recreate();
     }
@@ -189,11 +189,11 @@ class DataflowWidget : public QWidget
       m_model.reload();
     }
 
-};
+};*/
 
 InspectorWidget::InspectorWidget(
     const Shader::ProcessModel& object,
-    const iscore::DocumentContext& context,
+    const score::DocumentContext& context,
     QWidget* parent):
   InspectorWidgetDelegate_T {object, parent},
   m_dispatcher{context.commandStack}
@@ -210,8 +210,8 @@ InspectorWidget::InspectorWidget(
       m_edit.setPlainText(txt);
   });
 
-  auto lay = new iscore::MarginLess<QVBoxLayout>{this};
+  auto lay = new score::MarginLess<QVBoxLayout>{this};
   lay->addWidget(&m_edit);
-  lay->addWidget(new DataflowWidget{object, context});
+ // lay->addWidget(new DataflowWidget{object, context});
 }
 }

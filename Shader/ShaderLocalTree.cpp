@@ -6,7 +6,7 @@ namespace Shader
 {
 
 LocalTreeProcessComponent::LocalTreeProcessComponent(
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         ossia::net::node_base& parent,
         Shader::ProcessModel& proc,
         Engine::LocalTree::DocumentPlugin& sys,

@@ -1,7 +1,7 @@
 #include <Shader/ShaderModel.hpp>
 #include <Shader/ShaderPresenter.hpp>
 #include <Shader/ShaderView.hpp>
-#include <iscore/command/Dispatchers/CommandDispatcher.hpp>
+#include <score/command/Dispatchers/CommandDispatcher.hpp>
 
 
 namespace Shader

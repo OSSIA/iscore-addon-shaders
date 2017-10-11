@@ -3,32 +3,32 @@
 
 #include <Device/Protocol/DeviceList.hpp>
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
-#include <Engine/iscore2OSSIA.hpp>
+#include <Engine/score2OSSIA.hpp>
 #include <ossia/editor/state/state_element.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <QOpenGLWindow>
 namespace Shader
 {
 
 ProcessExecutor::ProcessExecutor(
     GLWindow* w,
-    const std::vector<Process::Port>& p,
+    const std::vector<Process::Port*>& p,
     const Device::DeviceList& devices):
   m_devices{devices}
 , m_window{w}
 {
-  for(const Process::Port& port : p)
+  for(const Process::Port* port : p)
   {
-    auto addr = Engine::iscore_to_ossia::address(port.address.address, devices);
+    auto addr = Engine::score_to_ossia::address(port->address().address, devices);
     if(addr)
     {
-      m_ports.push_back({addr, port.customData.toStdString()});
+      m_ports.push_back({addr, port->customData().toStdString()});
     }
   }
 }
 
 
-void ProcessExecutor::start()
+void ProcessExecutor::start(ossia::state&)
 {
   for(auto port : m_ports)
   {
@@ -53,7 +53,7 @@ void ProcessExecutor::resume()
 {
 }
 
-ossia::state_element ProcessExecutor::state(ossia::time_value date, double pos)
+ossia::state_element ProcessExecutor::state(ossia::time_value date, double pos, ossia::time_value tick_offset)
 {
   m_window->sig_setValue("time", (float)pos);
 
@@ -67,13 +67,13 @@ ossia::state_element ProcessExecutor::state(ossia::time_value date, double pos)
 
 
 ProcessExecutorComponent::ProcessExecutorComponent(
-    Engine::Execution::ConstraintComponent& parentConstraint,
+    Engine::Execution::IntervalComponent& parentInterval,
     Shader::ProcessModel& element,
     const Engine::Execution::Context& ctx,
-    const Id<iscore::Component>& id,
+    const Id<score::Component>& id,
     QObject* parent):
   ProcessComponent_T{
-    parentConstraint, element, ctx, id, "ShaderExecutorComponent", parent}
+    parentInterval, element, ctx, id, "ShaderExecutorComponent", parent}
 {
   m_ossia_process = std::make_shared<ProcessExecutor>(
                       element.window(),

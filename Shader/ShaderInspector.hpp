@@ -2,7 +2,7 @@
 #include <Shader/ShaderModel.hpp>
 #include <Process/Inspector/ProcessInspectorWidgetDelegate.hpp>
 #include <Process/Inspector/ProcessInspectorWidgetDelegateFactory.hpp>
-#include <iscore/command/Dispatchers/CommandDispatcher.hpp>
+#include <score/command/Dispatchers/CommandDispatcher.hpp>
 #include <QPlainTextEdit>
 namespace Shader
 {
@@ -14,7 +14,7 @@ class InspectorWidget final :
     public:
         explicit InspectorWidget(
                 const Shader::ProcessModel& object,
-                const iscore::DocumentContext& context,
+                const score::DocumentContext& context,
                 QWidget* parent);
 
     private:
@@ -26,6 +26,6 @@ class InspectorWidget final :
 class InspectorFactory final :
         public Process::InspectorWidgetDelegateFactory_T<ProcessModel, InspectorWidget>
 {
-        ISCORE_CONCRETE("7a4f4191-fce1-485e-9479-e6b1b1804dad")
+        SCORE_CONCRETE("7a4f4191-fce1-485e-9479-e6b1b1804dad")
 };
 }

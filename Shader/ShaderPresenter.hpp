@@ -4,7 +4,7 @@
 #include <QPoint>
 
 #include <Process/ZoomHelper.hpp>
-#include <iscore/model/Identifier.hpp>
+#include <score/model/Identifier.hpp>
 #include <Process/Focus/FocusDispatcher.hpp>
 
 namespace Shader

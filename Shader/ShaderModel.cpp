@@ -8,7 +8,7 @@ ProcessModel::ProcessModel(
         const TimeVal& duration,
         const Id<Process::ProcessModel>& id,
         QObject* parent):
-    Process::DataflowProcess{duration, id, "Shader", parent}
+    Process::ProcessModel{duration, id, "Shader", parent}
 {
     metadata().setInstanceName(*this);
     m_fragment =
@@ -25,7 +25,7 @@ ProcessModel::ProcessModel(
 
         void mainImage( out vec4 fragColor, in vec4 fragCoord )
         {
-        fragColor = vec4(tata, mod(time, 1.) * noise(fragCoord.y), noise(fragCoord.z), 1.);
+        fragColor = vec4(tata / 127.0, mod(time, 1.) * noise(fragCoord.y), noise(fragCoord.z), 1.);
         }
         )_";
 
@@ -58,7 +58,7 @@ ProcessModel::ProcessModel(
     const ProcessModel& source,
     const Id<Process::ProcessModel>& id,
     QObject* parent):
-  Process::DataflowProcess{source, id, "Shader", parent}
+  Process::ProcessModel{source, id, "Shader", parent}
 {
 
 }
@@ -203,7 +203,7 @@ void GLWindow::paintGL()
     shaderProgram->bind();
     for(auto& val : m_values)
     {
-      shaderProgram->setUniformValue(val.first.data(), val.second.get<float>());
+      shaderProgram->setUniformValue(val.first.data(), ossia::convert<float>(val.second));
     }
 
     {
