@@ -7,7 +7,7 @@ EditShader::EditShader(
         const Shader::ProcessModel& model
     , QString n):
     m_model{model}
-  , m_old{model.fragment()}
+  , m_old{model.shader()}
   , m_new{n}
 {
 }
@@ -15,13 +15,13 @@ EditShader::EditShader(
 void EditShader::undo(const score::DocumentContext& ctx) const
 {
     Shader::ProcessModel& proc = m_model.find(ctx);
-    proc.setFragment(m_old);
+    proc.setShader(m_old);
 }
 
 void EditShader::redo(const score::DocumentContext& ctx) const
 {
     Shader::ProcessModel& proc = m_model.find(ctx);
-    proc.setFragment(m_new);
+    proc.setShader(m_new);
 }
 
 void EditShader::serializeImpl(DataStreamInput& s) const

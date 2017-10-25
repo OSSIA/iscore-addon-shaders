@@ -6,12 +6,16 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
+#include <QOpenGLTexture>
 #include <QVector3D>
 #include <boost/container/flat_map.hpp>
 #include <ossia-qt/js_utilities.hpp>
+#include <ossia/dataflow/data.hpp>
+#include <isf.hpp>
 class QOpenGLShader;
 class QOpenGLShaderProgram;
 Q_DECLARE_METATYPE(std::string)
+Q_DECLARE_METATYPE(ossia::audio_vector)
 namespace Shader
 {
 class ProcessModel;
@@ -31,9 +35,11 @@ class GLWindow : public QOpenGLWindow, public QOpenGLFunctions
   QOpenGLShader* shader{};
   signals:
     void sig_setValue(std::string, ossia::value);
+    void sig_setAudio(std::string, ossia::audio_vector);
 
   public slots:
     void slt_setValue(std::string, ossia::value);
+    void slt_setAudio(std::string, ossia::audio_vector);
 
   private:
     ProcessModel& model;
@@ -41,7 +47,16 @@ class GLWindow : public QOpenGLWindow, public QOpenGLFunctions
 
   QOpenGLBuffer m_vertex;
   QOpenGLVertexArrayObject m_object;
+
+  QOpenGLBuffer m_vbo_position;
+  QOpenGLBuffer m_vbo_index;
+  QOpenGLBuffer m_vbo_tex_coord;
+
   boost::container::flat_map<std::string, ossia::value> m_values;
+  boost::container::flat_map<std::string, ossia::audio_vector> m_audio;
+  boost::container::flat_map<std::string, std::vector<float>> m_audioBuffers;
+  boost::container::flat_map<std::string, QOpenGLTexture*> m_audioTextures;
+
 
   bool m_shaderDirty{false};
 };
@@ -53,7 +68,7 @@ class ProcessModel final : public Process::ProcessModel
     PROCESS_METADATA_IMPL(Shader::ProcessModel)
 
     Q_OBJECT
-    Q_PROPERTY(QString fragment READ fragment WRITE setFragment NOTIFY fragmentChanged)
+    Q_PROPERTY(QString shader READ shader WRITE setShader NOTIFY shaderChanged)
     public:
       ProcessModel(const TimeVal& duration,
                    const Id<Process::ProcessModel>& id,
@@ -66,13 +81,14 @@ class ProcessModel final : public Process::ProcessModel
       vis.writeTo(*this);
     }
 
-    QString fragment() const;
+    QString shader() const;
+    std::string fragment() const;
     GLWindow* window() const { return m_window; }
 
   public slots:
-    void setFragment(QString fragment);
+    void setShader(QString shader);
   signals:
-    void fragmentChanged(QString fragment);
+    void shaderChanged(QString shader);
 
   private:
     ProcessModel(const ProcessModel& source,
@@ -92,7 +108,15 @@ class ProcessModel final : public Process::ProcessModel
     void setDurationAndScale(const TimeVal& newDuration) override;
     void setDurationAndGrow(const TimeVal& newDuration) override;
     void setDurationAndShrink(const TimeVal& newDuration) override;
-    QString m_fragment;
+    QString m_shader;
     GLWindow* m_window{};
+
+    // ProcessModel interface
+public:
+    std::vector<Process::Port*> inlets() const override;
+    std::vector<Process::Port*> outlets() const override;
+
+    std::vector<Process::Port*> m_inlets, m_outlets;
+    std::unique_ptr<isf::parser> m_parser;
 };
 }

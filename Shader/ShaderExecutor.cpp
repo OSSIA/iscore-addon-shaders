@@ -14,54 +14,44 @@ ProcessExecutor::ProcessExecutor(
     GLWindow* w,
     const std::vector<Process::Port*>& p,
     const Device::DeviceList& devices):
-  m_devices{devices}
-, m_window{w}
+  m_window{w}
 {
+  using namespace ossia;
   for(const Process::Port* port : p)
   {
-    auto addr = Engine::score_to_ossia::address(port->address().address, devices);
-    if(addr)
+    inlet_ptr inlet;
+    if(port->type == Process::PortType::Message)
+      inlet = ossia::make_inlet<value_port>();
+    else
+      inlet = ossia::make_inlet<audio_port>();
+
+    if(auto addr = Engine::score_to_ossia::makeDestination(devices, port->address()))
     {
-      m_ports.push_back({addr, port->customData().toStdString()});
+      inlet->address = &addr->address();
+    }
+
+    m_id.push_back(port->customData().toStdString());
+    inputs().push_back(inlet);
+  }
+}
+
+void ProcessExecutor::run(ossia::token_request t, ossia::execution_state&)
+{
+  m_window->sig_setValue("TIME", (float)t.position);
+
+  for(std::size_t i = 0; i < m_inlets.size(); i++)
+  {
+    const auto& inlet = inputs()[i];
+    if(auto val = inlet->data.target<ossia::value_port>())
+    {
+      if(!val->data.empty())
+        m_window->sig_setValue(m_id[i], val->data.front());
+    }
+    else if(auto val = inlet->data.target<ossia::audio_port>())
+    {
+      m_window->sig_setAudio(m_id[i], val->samples);
     }
   }
-}
-
-
-void ProcessExecutor::start(ossia::state&)
-{
-  for(auto port : m_ports)
-  {
-    m_it.push_back(port.first->add_callback([] (const ossia::value&) { }));
-  }
-}
-
-void ProcessExecutor::stop()
-{
-  for(int i = 0; i < m_ports.size(); i++)
-  {
-    m_ports[i].first->remove_callback(m_it[i]);
-  }
-  m_it.clear();
-}
-
-void ProcessExecutor::pause()
-{
-}
-
-void ProcessExecutor::resume()
-{
-}
-
-ossia::state_element ProcessExecutor::state(ossia::time_value date, double pos, ossia::time_value tick_offset)
-{
-  m_window->sig_setValue("time", (float)pos);
-
-  for(auto port : m_ports)
-  {
-    m_window->sig_setValue(port.second, port.first->value());
-  }
-  return {};
 }
 
 
@@ -75,10 +65,15 @@ ProcessExecutorComponent::ProcessExecutorComponent(
   ProcessComponent_T{
     parentInterval, element, ctx, id, "ShaderExecutorComponent", parent}
 {
-  m_ossia_process = std::make_shared<ProcessExecutor>(
-                      element.window(),
-                      element.inlets(),
-                      ctx.devices.list());
+  auto node = std::make_shared<ProcessExecutor>(element.window(), element.inlets(), ctx.devices.list());
+  auto proc = std::make_shared<ossia::node_process>(node);
+  ctx.plugin.execGraph->add_node(node);
+
+  int i = 0;
+  for(auto p : element.inlets())
+    ctx.plugin.inlets.insert({p, {node, node->inputs()[i++]}});
+
+  m_ossia_process = proc;
 }
 
 }

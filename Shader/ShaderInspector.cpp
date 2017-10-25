@@ -198,13 +198,13 @@ InspectorWidget::InspectorWidget(
   InspectorWidgetDelegate_T {object, parent},
   m_dispatcher{context.commandStack}
 {
-  m_edit.setPlainText(object.fragment());
+  m_edit.setPlainText(object.shader());
   con(m_edit, &QPlainTextEdit::textChanged,
       this, [&] {
     m_dispatcher.submitCommand<EditShader>(object, m_edit.toPlainText());
   });
 
-  con(object, &Shader::ProcessModel::fragmentChanged,
+  con(object, &Shader::ProcessModel::shaderChanged,
       this, [&] (const auto& txt) {
     if(txt != m_edit.toPlainText())
       m_edit.setPlainText(txt);
