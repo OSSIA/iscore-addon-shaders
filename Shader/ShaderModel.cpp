@@ -1,6 +1,6 @@
 #include "ShaderModel.hpp"
 #include <QOpenGLShaderProgram>
-#include <Process/Dataflow/DataflowObjects.hpp>
+#include <Process/Dataflow/Port.hpp>
 
 namespace Shader
 {
@@ -133,7 +133,7 @@ void ProcessModel::setShader(QString shader)
       int i = 0;
       for(auto input : m_parser->data().inputs)
       {
-        if(auto p = std::visit(shader_visitor{i, *this}, input.data))
+        if(auto p = eggs::variants::apply(shader_visitor{i, *this}, input.data))
         {
           p->setCustomData(QString::fromStdString(input.name));
           m_inlets.push_back(p);
@@ -227,6 +227,10 @@ std::vector<Process::Port*> ProcessModel::outlets() const
 GLWindow::GLWindow(ProcessModel& m):
   model{m}
 {
+  QSurfaceFormat f;
+  f.setProfile(QSurfaceFormat::CoreProfile);
+  f.setVersion(4, 1);
+  setFormat(f);
   connect(this, &GLWindow::sig_setValue,
           this, &GLWindow::slt_setValue,
           Qt::QueuedConnection);
