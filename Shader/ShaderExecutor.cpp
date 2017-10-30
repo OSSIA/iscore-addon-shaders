@@ -44,8 +44,7 @@ void ProcessExecutor::run(ossia::token_request t, ossia::execution_state&)
     const auto& inlet = inputs()[i];
     if(auto val = inlet->data.target<ossia::value_port>())
     {
-      if(!val->data.empty())
-        m_window->sig_setValue(m_id[i], val->data.front());
+      m_window->sig_setValue(m_id[i], val->data);
     }
     else if(auto val = inlet->data.target<ossia::audio_port>())
     {

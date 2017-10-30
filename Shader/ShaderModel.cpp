@@ -133,7 +133,7 @@ void ProcessModel::setShader(QString shader)
       int i = 0;
       for(auto input : m_parser->data().inputs)
       {
-        if(auto p = eggs::variants::apply(shader_visitor{i, *this}, input.data))
+        if(auto p = std::visit(shader_visitor{i, *this}, input.data))
         {
           p->setCustomData(QString::fromStdString(input.name));
           m_inlets.push_back(p);
