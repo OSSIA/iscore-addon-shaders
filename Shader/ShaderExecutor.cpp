@@ -9,10 +9,27 @@
 #include <QOpenGLWindow>
 namespace Shader
 {
+class ProcessExecutor final :
+        public ossia::graph_node
+{
+    public:
+        ProcessExecutor(
+            GLWindow* w,
+            const Process::Inlets& p,
+            const Device::DeviceList&);
+
+
+        void run(ossia::token_request, ossia::execution_state&) override;
+
+    private:
+        GLWindow* m_window{};
+        std::vector<std::string> m_id;
+};
+
 
 ProcessExecutor::ProcessExecutor(
     GLWindow* w,
-    const std::vector<Process::Port*>& p,
+    const Process::Inlets& p,
     const Device::DeviceList& devices):
   m_window{w}
 {
@@ -44,7 +61,9 @@ void ProcessExecutor::run(ossia::token_request t, ossia::execution_state&)
     const auto& inlet = inputs()[i];
     if(auto val = inlet->data.target<ossia::value_port>())
     {
-      m_window->sig_setValue(m_id[i], val->data);
+      auto& dat = val->get_data();
+      if(!dat.empty())
+        m_window->sig_setValue(m_id[i], dat.back().value);
     }
     else if(auto val = inlet->data.target<ossia::audio_port>())
     {
@@ -56,13 +75,11 @@ void ProcessExecutor::run(ossia::token_request t, ossia::execution_state&)
 
 
 ProcessExecutorComponent::ProcessExecutorComponent(
-    Engine::Execution::IntervalComponent& parentInterval,
     Shader::ProcessModel& element,
     const Engine::Execution::Context& ctx,
     const Id<score::Component>& id,
     QObject* parent):
-  ProcessComponent_T{
-    parentInterval, element, ctx, id, "ShaderExecutorComponent", parent}
+  ProcessComponent_T{element, ctx, id, "ShaderExecutorComponent", parent}
 {
   auto node = std::make_shared<ProcessExecutor>(element.window(), element.inlets(), ctx.devices.list());
   auto proc = std::make_shared<ossia::node_process>(node);

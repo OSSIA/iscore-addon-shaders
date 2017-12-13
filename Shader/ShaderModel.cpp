@@ -55,59 +55,59 @@ struct shader_visitor
 {
     int& i;
     ProcessModel& parent;
-    Process::Port* operator()(const isf::float_input& v)
+    Process::Inlet* operator()(const isf::float_input& v)
     {
-      auto p = new Process::Port(Id<Process::Port>(i++), &parent);
+      auto p = new Process::ControlInlet(Id<Process::Port>(i++), &parent);
       p->type = Process::PortType::Message;
       return p;
     }
-    Process::Port* operator()(const isf::long_input& v)
+    Process::Inlet* operator()(const isf::long_input& v)
     {
-      auto p = new Process::Port(Id<Process::Port>(i++), &parent);
+      auto p = new Process::Inlet(Id<Process::Port>(i++), &parent);
       p->type = Process::PortType::Message;
       return p;
     }
-    Process::Port* operator()(const isf::event_input& v)
+    Process::Inlet* operator()(const isf::event_input& v)
     {
-      auto p = new Process::Port(Id<Process::Port>(i++), &parent);
+      auto p = new Process::Inlet(Id<Process::Port>(i++), &parent);
       p->type = Process::PortType::Message;
       return p;
     }
-    Process::Port* operator()(const isf::bool_input& v)
+    Process::Inlet* operator()(const isf::bool_input& v)
     {
-      auto p = new Process::Port(Id<Process::Port>(i++), &parent);
+      auto p = new Process::Inlet(Id<Process::Port>(i++), &parent);
       p->type = Process::PortType::Message;
       return p;
     }
-    Process::Port* operator()(const isf::point2d_input& v)
+    Process::Inlet* operator()(const isf::point2d_input& v)
     {
-      auto p = new Process::Port(Id<Process::Port>(i++), &parent);
+      auto p = new Process::Inlet(Id<Process::Port>(i++), &parent);
       p->type = Process::PortType::Message;
       return p;
     }
-    Process::Port* operator()(const isf::point3d_input& v)
+    Process::Inlet* operator()(const isf::point3d_input& v)
     {
-      auto p = new Process::Port(Id<Process::Port>(i++), &parent);
+      auto p = new Process::Inlet(Id<Process::Port>(i++), &parent);
       p->type = Process::PortType::Message;
       return p;
     }
-    Process::Port* operator()(const isf::color_input& v)
+    Process::Inlet* operator()(const isf::color_input& v)
     {
-      auto p = new Process::Port(Id<Process::Port>(i++), &parent);
+      auto p = new Process::Inlet(Id<Process::Port>(i++), &parent);
       p->type = Process::PortType::Message;
       return p;
     }
-    Process::Port* operator()(const isf::image_input& v)
+    Process::Inlet* operator()(const isf::image_input& v)
     {
       return nullptr;
     }
-    Process::Port* operator()(const isf::audio_input& v)
+    Process::Inlet* operator()(const isf::audio_input& v)
     {
-      auto p = new Process::Port(Id<Process::Port>(i++), &parent);
+      auto p = new Process::Inlet(Id<Process::Port>(i++), &parent);
       p->type = Process::PortType::Audio;
       return p;
     }
-    Process::Port* operator()(const isf::audioFFT_input& v)
+    Process::Inlet* operator()(const isf::audioFFT_input& v)
     {
       return nullptr;
     }
@@ -214,12 +214,12 @@ void ProcessModel::setDurationAndShrink(const TimeVal& newDuration)
 {
 }
 
-std::vector<Process::Port*> ProcessModel::inlets() const
+Process::Inlets ProcessModel::inlets() const
 {
   return m_inlets;
 }
 
-std::vector<Process::Port*> ProcessModel::outlets() const
+Process::Outlets ProcessModel::outlets() const
 {
   return m_outlets;
 }
@@ -340,7 +340,7 @@ void GLWindow::paintGL()
 
   {
     // Bind audio textures
-    chobo::small_vector<QOpenGLTexture*, 8> ok;
+    ossia::small_vector<QOpenGLTexture*, 8> ok;
 
     for(auto& val : m_audio)
     {
