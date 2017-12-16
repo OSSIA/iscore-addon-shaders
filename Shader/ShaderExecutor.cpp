@@ -7,6 +7,7 @@
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <QOpenGLWindow>
+#include <ossia/dataflow/graph.hpp>
 namespace Shader
 {
 class ProcessExecutor final :
