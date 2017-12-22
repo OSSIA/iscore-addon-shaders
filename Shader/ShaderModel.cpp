@@ -14,20 +14,30 @@ ProcessModel::ProcessModel(
   metadata().setInstanceName(*this);
   m_shader =
       R"_(
-      uniform float time;
-      uniform float tata;
-      float rand(float n){return fract(sin(n) * 43758.5453123);}
+/*
+{
+  "CATEGORIES" : [
+    "Generator"
+  ],
+  "DESCRIPTION" : "Visualizes an FFT analysis image with custom set colors for frequency domain",
+  "INPUTS" : [
+    {
+      "NAME" : "waveImage",
+      "TYPE" : "audio"
+    }
+  ],
+  "CREDIT" : "by VIDVOX"
+}
+*/
 
-      float noise(float p){
-      float fl = floor(p);
-      float fc = fract(p);
-      return mix(rand(fl), rand(fl + 1.0), fc);
-      }
 
-      void mainImage( out vec4 fragColor, in vec4 fragCoord )
-      {
-      fragColor = vec4(tata / 127.0, mod(time, 1.) * noise(fragCoord.y), noise(fragCoord.z), 1.);
-      }
+
+void main()
+{
+ gl_FragColor.r = IMG_PIXEL(waveImage, vec2(isf_FragNormCoord[0], isf_FragNormCoord[1] / 256.)).r;
+ gl_FragColor.g = IMG_PIXEL(waveImage, vec2(isf_FragNormCoord[0], isf_FragNormCoord[1] / 256.)).g;
+ gl_FragColor.b = IMG_PIXEL(waveImage, vec2(isf_FragNormCoord[0], isf_FragNormCoord[1] / 256.)).b;
+}
       )_";
 
   m_window = new GLWindow{*this};
@@ -150,15 +160,6 @@ void ProcessModel::setShader(QString shader)
     emit outletsChanged();
 
   }
-}
-
-ProcessModel::ProcessModel(
-    const ProcessModel& source,
-    const Id<Process::ProcessModel>& id,
-    QObject* parent):
-  Process::ProcessModel{source, id, "Shader", parent}
-{
-
 }
 
 QString ProcessModel::prettyName() const

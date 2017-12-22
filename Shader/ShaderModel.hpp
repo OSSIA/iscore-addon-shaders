@@ -91,9 +91,6 @@ class ProcessModel final : public Process::ProcessModel
     void shaderChanged(QString shader);
 
   private:
-    ProcessModel(const ProcessModel& source,
-                 const Id<Process::ProcessModel>& id,
-                 QObject* parent);
 
     QString prettyName() const override;
     void startExecution() override;

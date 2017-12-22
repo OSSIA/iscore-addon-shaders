@@ -84,12 +84,7 @@ ProcessExecutorComponent::ProcessExecutorComponent(
 {
   auto node = std::make_shared<ProcessExecutor>(element.window(), element.inlets(), ctx.devices.list());
   auto proc = std::make_shared<ossia::node_process>(node);
-  ctx.plugin.execGraph->add_node(node);
-
-  int i = 0;
-  for(auto p : element.inlets())
-    ctx.plugin.inlets.insert({p, {node, node->inputs()[i++]}});
-
+  ctx.plugin.register_node(element, node);
   m_ossia_process = proc;
 }
 
