@@ -2,7 +2,6 @@
 #include <Process/Style/ScenarioStyle.hpp>
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
-#include <QQuickWidget>
 #include <QGraphicsProxyWidget>
 #include <QApplication>
 namespace Shader
