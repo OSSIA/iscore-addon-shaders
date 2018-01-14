@@ -110,11 +110,6 @@ class ProcessModel final : public Process::ProcessModel
 
     // ProcessModel interface
 public:
-    Process::Inlets inlets() const override;
-    Process::Outlets outlets() const override;
-
-    Process::Inlets m_inlets;
-    Process::Outlets m_outlets;
     std::unique_ptr<isf::parser> m_parser;
 };
 }

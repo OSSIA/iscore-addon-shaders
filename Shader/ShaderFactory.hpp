@@ -5,6 +5,6 @@
 namespace Shader
 {
 using ProcessFactory =
-    Process::GenericProcessModelFactory<
+    Process::ProcessFactory_T<
         Shader::ProcessModel>;
 }

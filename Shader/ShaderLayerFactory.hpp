@@ -7,7 +7,7 @@
 
 namespace Shader
 {
-    using LayerFactory = Process::GenericLayerFactory<
+    using LayerFactory = Process::LayerFactory_T<
     Shader::ProcessModel,
     Shader::ShaderPresenter,
     Shader::ShaderView,

@@ -215,16 +215,6 @@ void ProcessModel::setDurationAndShrink(const TimeVal& newDuration)
 {
 }
 
-Process::Inlets ProcessModel::inlets() const
-{
-  return m_inlets;
-}
-
-Process::Outlets ProcessModel::outlets() const
-{
-  return m_outlets;
-}
-
 GLWindow::GLWindow(ProcessModel& m):
   model{m}
 {

@@ -13,5 +13,6 @@ PROCESS_METADATA(
         "Shader",
         "Shader",
         "Graphics",
-        {}
+        {},
+        Process::ProcessFlags::SupportsTemporal
         )

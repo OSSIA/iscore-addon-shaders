@@ -82,9 +82,8 @@ ProcessExecutorComponent::ProcessExecutorComponent(
     QObject* parent):
   ProcessComponent_T{element, ctx, id, "ShaderExecutorComponent", parent}
 {
-  auto node = std::make_shared<ProcessExecutor>(element.window(), element.inlets(), ctx.devices.list());
+  node = std::make_shared<ProcessExecutor>(element.window(), element.inlets(), ctx.devices.list());
   auto proc = std::make_shared<ossia::node_process>(node);
-  ctx.plugin.register_node(element, node);
   m_ossia_process = proc;
 }
 
