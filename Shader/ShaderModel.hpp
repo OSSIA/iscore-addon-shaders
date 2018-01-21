@@ -33,11 +33,11 @@ class GLWindow : public QOpenGLWindow, public QOpenGLFunctions
   void paintGL() override;
 
   QOpenGLShader* shader{};
-  signals:
+  Q_SIGNALS:
     void sig_setValue(std::string, ossia::value);
     void sig_setAudio(std::string, ossia::audio_vector);
 
-  public slots:
+  public Q_SLOTS:
     void slt_setValue(std::string, ossia::value);
     void slt_setAudio(std::string, ossia::audio_vector);
 
@@ -85,9 +85,9 @@ class ProcessModel final : public Process::ProcessModel
     std::string fragment() const;
     GLWindow* window() const { return m_window; }
 
-  public slots:
+  public Q_SLOTS:
     void setShader(QString shader);
-  signals:
+  Q_SIGNALS:
     void shaderChanged(QString shader);
 
   private:
