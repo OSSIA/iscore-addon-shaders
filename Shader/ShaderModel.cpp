@@ -155,9 +155,9 @@ void ProcessModel::setShader(QString shader)
     }
 
     m_window->reload();
-    emit shaderChanged(m_shader);
-    emit inletsChanged();
-    emit outletsChanged();
+    shaderChanged(m_shader);
+    inletsChanged();
+    outletsChanged();
 
   }
 }
