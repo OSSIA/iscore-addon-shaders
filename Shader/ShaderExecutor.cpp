@@ -1,7 +1,7 @@
 #include "ShaderExecutor.hpp"
 #include <Shader/ShaderModel.hpp>
 
-#include <Device/Protocol/DeviceList.hpp>
+#include <Explorer/DeviceList.hpp>
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
 #include <Engine/score2OSSIA.hpp>
 #include <ossia/editor/state/state_element.hpp>

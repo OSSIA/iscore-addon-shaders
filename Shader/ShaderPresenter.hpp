@@ -35,7 +35,7 @@ class ShaderPresenter final :
         const Id<Process::ProcessModel>& modelId() const override;
 
     private:
-        const ProcessModel& m_layer;
+        const Shader::ProcessModel& m_layer;
         ShaderView* m_view{};
 };
 }

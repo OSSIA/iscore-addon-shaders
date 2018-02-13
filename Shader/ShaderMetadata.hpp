@@ -14,5 +14,6 @@ PROCESS_METADATA(
         "Shader",
         "Graphics",
         {},
-        Process::ProcessFlags::SupportsTemporal
+        Process::ProcessFlags::SupportsTemporal |
+        Process::ProcessFlags::PutInNewSlot
         )
