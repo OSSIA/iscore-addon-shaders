@@ -41,6 +41,7 @@ set(SRCS
 
 # Creation of the library
 add_library(${PROJECT_NAME} ${SRCS} ${HDRS})
+score_moc_headers(${PROJECT_NAME} "${HDRS}")
 
 # Code generation
 score_generate_command_list_file(${PROJECT_NAME} "${HDRS}")
