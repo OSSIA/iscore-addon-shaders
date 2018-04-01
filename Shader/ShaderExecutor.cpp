@@ -9,11 +9,11 @@
 #include <QOpenGLWindow>
 namespace Shader
 {
-class ProcessExecutor final :
+class shader_node final :
         public ossia::graph_node
 {
     public:
-        ProcessExecutor(
+        shader_node(
             GLWindow* w,
             const Process::Inlets& p,
             const Device::DeviceList&);
@@ -27,7 +27,7 @@ class ProcessExecutor final :
 };
 
 
-ProcessExecutor::ProcessExecutor(
+shader_node::shader_node(
     GLWindow* w,
     const Process::Inlets& p,
     const Device::DeviceList& devices):
@@ -52,7 +52,7 @@ ProcessExecutor::ProcessExecutor(
   }
 }
 
-void ProcessExecutor::run(ossia::token_request t, ossia::execution_state&)
+void shader_node::run(ossia::token_request t, ossia::execution_state&)
 {
   m_window->sig_setValue("TIME", (float)t.position);
 
@@ -81,7 +81,7 @@ ProcessExecutorComponent::ProcessExecutorComponent(
     QObject* parent):
   ProcessComponent_T{element, ctx, id, "ShaderExecutorComponent", parent}
 {
-  node = std::make_shared<ProcessExecutor>(element.window(), element.inlets(), ctx.devices.list());
+  node = std::make_shared<shader_node>(element.window(), element.inlets(), ctx.devices.list());
   auto proc = std::make_shared<ossia::node_process>(node);
   m_ossia_process = proc;
 }
