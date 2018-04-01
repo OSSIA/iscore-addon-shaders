@@ -79,6 +79,7 @@ class ProcessModel final : public Process::ProcessModel
       Process::ProcessModel{vis, parent}
     {
       vis.writeTo(*this);
+      init();
     }
 
     QString shader() const;
@@ -91,6 +92,8 @@ class ProcessModel final : public Process::ProcessModel
     void shaderChanged(QString shader);
 
   private:
+
+    void init();
 
     QString prettyName() const override;
     void startExecution() override;

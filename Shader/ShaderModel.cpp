@@ -12,42 +12,52 @@ ProcessModel::ProcessModel(
   Process::ProcessModel{duration, id, "Shader", parent}
 {
   metadata().setInstanceName(*this);
-  m_shader =
-      R"_(
-/*
-{
-  "CATEGORIES" : [
-    "Generator"
-  ],
-  "DESCRIPTION" : "Visualizes an FFT analysis image with custom set colors for frequency domain",
-  "INPUTS" : [
-    {
-      "NAME" : "waveImage",
-      "TYPE" : "audio"
-    }
-  ],
-  "CREDIT" : "by VIDVOX"
-}
-*/
+  setShader(R"_(/* { } */
+
+void main() {
+  gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+})_");
+
+//  setShader(
+//      R"_(
+///*
+//{
+//  "CATEGORIES" : [
+//    "Generator"
+//  ],
+//  "DESCRIPTION" : "Visualizes an FFT analysis image with custom set colors for frequency domain",
+//  "INPUTS" : [
+//    {
+//      "NAME" : "waveImage",
+//      "TYPE" : "audio"
+//    }
+//  ],
+//  "CREDIT" : "by VIDVOX"
+//}
+//*/
+
+//void main()
+//{
+// isf_FragColor.r = IMG_PIXEL(waveImage, vec2(isf_FragNormCoord[0], isf_FragNormCoord[1] / 256.)).r;
+// isf_FragColor.g = IMG_PIXEL(waveImage, vec2(isf_FragNormCoord[0], isf_FragNormCoord[1] / 256.)).g;
+// isf_FragColor.b = IMG_PIXEL(waveImage, vec2(isf_FragNormCoord[0], isf_FragNormCoord[1] / 256.)).b;
+//}
+//      )_");
 
 
-
-void main()
-{
- gl_FragColor.r = IMG_PIXEL(waveImage, vec2(isf_FragNormCoord[0], isf_FragNormCoord[1] / 256.)).r;
- gl_FragColor.g = IMG_PIXEL(waveImage, vec2(isf_FragNormCoord[0], isf_FragNormCoord[1] / 256.)).g;
- gl_FragColor.b = IMG_PIXEL(waveImage, vec2(isf_FragNormCoord[0], isf_FragNormCoord[1] / 256.)).b;
-}
-      )_";
-
-  m_window = new GLWindow{*this};
-  m_window->show();
+  init();
 }
 
 ProcessModel::~ProcessModel()
 {
   m_window->close();
   m_window->deleteLater();
+}
+
+void ProcessModel::init()
+{
+  m_window = new GLWindow{*this};
+  m_window->show();
 }
 
 QString ProcessModel::shader() const
@@ -138,12 +148,10 @@ void ProcessModel::setShader(QString shader)
     try {
       m_parser = std::make_unique<isf::parser>(shader.toStdString());
 
-      auto f = QString::fromStdString(m_parser->fragment());
-
       int i = 0;
       for(auto input : m_parser->data().inputs)
       {
-        if(auto p = std::visit(shader_visitor{i, *this}, input.data))
+        if(auto p = eggs::variants::apply(shader_visitor{i, *this}, input.data))
         {
           p->setCustomData(QString::fromStdString(input.name));
           m_inlets.push_back(p);
@@ -154,7 +162,8 @@ void ProcessModel::setShader(QString shader)
     {
     }
 
-    m_window->reload();
+    if(m_window)
+      m_window->reload();
     shaderChanged(m_shader);
     inletsChanged();
     outletsChanged();
@@ -240,8 +249,7 @@ void GLWindow::initializeGL()
   shaderProgram = new QOpenGLShaderProgram();
 
   shaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
-                                         R"_(
-                                         #version 330 core
+                                         R"_(#version 330 core
                                          const vec2 quadVertices[4] = vec2[4]( vec2(-1.0, -1.0), vec2(1.0, -1.0), vec2(-1.0, 1.0), vec2(1.0, 1.0) );
 
                                          void main()
@@ -251,6 +259,7 @@ void GLWindow::initializeGL()
                                          )_");
 
 
+  qDebug() << model.fragment();
   shaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, model.fragment().c_str());
   if(shaderProgram->shaders().size() < 2)
   {
@@ -260,8 +269,9 @@ void GLWindow::initializeGL()
 
   shader = shaderProgram->shaders()[1];
 
-  shaderProgram->link();
+  bool ok = shaderProgram->link();
   shaderProgram->bind();
+  qDebug() << "SHADER SUCCESSFULY BOUND: " << ok;
 
   m_vertex.create();
   m_vertex.bind();
@@ -285,6 +295,7 @@ void GLWindow::reload()
 
 void GLWindow::paintGL()
 {
+  qDebug() << "update";
   glClear(GL_COLOR_BUFFER_BIT);
 
   // Recompute the shader if necessary
@@ -307,6 +318,73 @@ void GLWindow::paintGL()
     shader->compileSourceCode(model.fragment().c_str());
     shaderProgram->link();
     qDebug() << shaderProgram->log();
+
+    // Set initial values
+
+    struct init_visitor {
+        QOpenGLShaderProgram& program;
+        const isf::input& input;
+
+        void operator()(const isf::float_input& v)
+        {
+          if(v.def)
+            program.setUniformValue(program.uniformLocation(input.name.c_str()), (GLfloat)v.def);
+        }
+        void operator()(const isf::long_input& v)
+        {
+          if(v.def)
+            program.setUniformValue(program.uniformLocation(input.name.c_str()), (GLint)v.def);
+        }
+        void operator()(const isf::event_input& v)
+        {
+        }
+        void operator()(const isf::bool_input& v)
+        {
+          program.setUniformValue(program.uniformLocation(input.name.c_str()), v.def);
+        }
+        void operator()(const isf::point2d_input& v)
+        {
+          if(v.def)
+          {
+            auto& a = *v.def;
+            program.setUniformValue(program.uniformLocation(input.name.c_str()), a[0], a[1]);
+          }
+        }
+        void operator()(const isf::point3d_input& v)
+        {
+          if(v.def)
+          {
+            auto& a = *v.def;
+            program.setUniformValue(program.uniformLocation(input.name.c_str()), a[0], a[1], a[2]);
+          }
+        }
+        void operator()(const isf::color_input& v)
+        {
+          if(v.def)
+          {
+            auto& a = *v.def;
+            program.setUniformValue(program.uniformLocation(input.name.c_str()), a[0], a[1], a[2], a[3]);
+          }
+        }
+        void operator()(const isf::image_input& v)
+        {
+        }
+        void operator()(const isf::audio_input& v)
+        {
+        }
+        void operator()(const isf::audioFFT_input& v)
+        {
+        }
+    };
+    shaderProgram->bind();
+    if(model.m_parser)
+    {
+      for(auto& val : model.m_parser->data().inputs)
+      {
+        eggs::variants::apply(init_visitor{*shaderProgram, val}, val.data);
+      }
+    }
+
 
     // Recreate audio textures
     for(const auto& inlet: model.inlets())
@@ -369,9 +447,34 @@ void GLWindow::paintGL()
 
 
     // Bind floats
+    struct val_apply
+    {
+        QOpenGLShaderProgram& program;
+        const std::string& input;
+        void operator()(ossia::impulse v)
+        {/* program.setUniformValue(input.c_str(), v); */}
+        void operator()()
+        { }
+        void operator()(float v)
+        { program.setUniformValue(input.c_str(), v); }
+        void operator()(int v)
+        { program.setUniformValue(input.c_str(), v); }
+        void operator()(ossia::vec2f v)
+        { program.setUniformValue(input.c_str(), v[0], v[1]); }
+        void operator()(ossia::vec3f v)
+        { program.setUniformValue(input.c_str(), v[0], v[1], v[2]); }
+        void operator()(ossia::vec4f v)
+        { program.setUniformValue(input.c_str(), v[0], v[1], v[2], v[3]); }
+        void operator()(bool v)
+        { program.setUniformValue(input.c_str(), v); }
+        void operator()(const std::string& v)
+        { qDebug("TODO"); }
+        void operator()(const std::vector<ossia::value>& v)
+        { qDebug("TODO"); }
+    };
     for(auto& val : m_values)
     {
-      shaderProgram->setUniformValue(val.first.data(), ossia::convert<float>(val.second));
+      val.second.apply(val_apply{*shaderProgram, val.first});
     }
 
     // Draw
@@ -416,6 +519,7 @@ template <>
 void DataStreamReader::read(
     const Shader::ProcessModel& proc)
 {
+  m_stream << proc.shader();
   insertDelimiter();
 }
 
@@ -423,6 +527,7 @@ template <>
 void DataStreamWriter::write(
     Shader::ProcessModel& proc)
 {
+  m_stream >> proc.m_shader;
   checkDelimiter();
 }
 
@@ -430,10 +535,12 @@ template <>
 void JSONObjectReader::read(
     const Shader::ProcessModel& proc)
 {
+  obj["Fragment"] = proc.shader();
 }
 
 template <>
 void JSONObjectWriter::write(
     Shader::ProcessModel& proc)
 {
+  proc.m_shader = obj["Fragment"].toString();
 }
