@@ -248,13 +248,33 @@ void GLWindow::initializeGL()
 
   shaderProgram = new QOpenGLShaderProgram();
 
-  shaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
-                                         R"_(#version 330 core
+  shaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex
+                                         //, model.m_parser->vertex().c_str()
+
+                                         /*
+                                         , R"_(#version 330 core
+                                         in highp vec2 position;
+                                         uniform vec2 RENDERSIZE;
+                                         out vec2 isf_FragNormCoord;
+                                         uniform highp mat4 qt_Matrix;
+
+                                         void main() {
+                                           gl_Position = qt_Matrix * vec4( position, 0.0, 1.0 );
+                                           isf_FragNormCoord = vec2((gl_Position.x+1.0)/2.0, (gl_Position.y+1.0)/2.0);
+                                         }
+                                         )_"
+
+                                                                              */
+                                         , R"_(#version 330 core
                                          const vec2 quadVertices[4] = vec2[4]( vec2(-1.0, -1.0), vec2(1.0, -1.0), vec2(-1.0, 1.0), vec2(1.0, 1.0) );
+
+                                         uniform vec2 RENDERSIZE;
+                                         out vec2 isf_FragNormCoord;
 
                                          void main()
                                          {
-                                         gl_Position = vec4(quadVertices[gl_VertexID], 0.0, 1.0);
+                                           gl_Position = vec4(quadVertices[gl_VertexID], 0.0, 1.0);
+                                           isf_FragNormCoord = vec2((gl_Position.x+1.0)/2.0, (gl_Position.y+1.0)/2.0);
                                          }
                                          )_");
 
@@ -295,7 +315,6 @@ void GLWindow::reload()
 
 void GLWindow::paintGL()
 {
-  qDebug() << "update";
   glClear(GL_COLOR_BUFFER_BIT);
 
   // Recompute the shader if necessary
@@ -406,6 +425,14 @@ void GLWindow::paintGL()
   }
 
   shaderProgram->bind();
+
+  static int f = 0;
+  shaderProgram->setUniformValue("TIMEDELTA", 0.001f);
+  shaderProgram->setUniformValue("FRAMEINDEX", f++);
+  shaderProgram->setUniformValue("RENDERSIZE", this->size());
+  shaderProgram->setUniformValue("DATE", 0.f, 0.f, 0.f, 0.f);
+  shaderProgram->setAttributeValue(0, 0., 0.);
+
 
   {
     // Bind audio textures
