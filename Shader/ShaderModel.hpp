@@ -92,13 +92,9 @@ class ProcessModel final : public Process::ProcessModel
     void shaderChanged(QString shader);
 
   private:
-
     void init();
 
     QString prettyName() const override;
-    void startExecution() override;
-    void stopExecution() override;
-    void reset() override;
     ProcessStateDataInterface*startStateData() const override;
     ProcessStateDataInterface*endStateData() const override;
     Selection selectableChildren() const override;

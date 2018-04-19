@@ -176,18 +176,6 @@ QString ProcessModel::prettyName() const
   return tr("Shader Process");
 }
 
-void ProcessModel::startExecution()
-{
-}
-
-void ProcessModel::stopExecution()
-{
-}
-
-void ProcessModel::reset()
-{
-}
-
 ProcessStateDataInterface* ProcessModel::startStateData() const
 {
   return nullptr;

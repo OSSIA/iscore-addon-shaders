@@ -5,7 +5,6 @@
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
 #include <Engine/score2OSSIA.hpp>
 #include <ossia/editor/state/state_element.hpp>
-#include <ossia/editor/scenario/time_interval.hpp>
 #include <QOpenGLWindow>
 namespace Shader
 {
