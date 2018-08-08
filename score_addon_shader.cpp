@@ -32,9 +32,9 @@ score_addon_shader::factories(
         Shader::LayerFactory>,
         FW<Process::InspectorWidgetDelegateFactory,
            Shader::InspectorFactory>,
-        FW<Engine::Execution::ProcessComponentFactory,
+        FW<Execution::ProcessComponentFactory,
            Shader::ProcessExecutorComponentFactory>,
-        FW<Engine::LocalTree::ProcessComponentFactory,
+        FW<LocalTree::ProcessComponentFactory,
            Shader::LocalTreeProcessComponentFactory>
     >(ctx, key);
 }
@@ -46,11 +46,12 @@ score_addon_shader::make_commands()
         CommandFactoryName(),
         CommandGeneratorMap{}};
 
-    using Types = TypeList<
-#include <score_addon_shader_commands.hpp>
-      >;
-
-    for_each_type<Types>(score::commands::FactoryInserter{cmds.second});
-
+    ossia::for_each_type<
+    #include <score_addon_shader_commands.hpp>
+        >(score::commands::FactoryInserter{cmds.second});
     return cmds;
 }
+
+#include <score/plugins/PluginInstances.hpp>
+SCORE_EXPORT_PLUGIN(score_addon_shader)
+

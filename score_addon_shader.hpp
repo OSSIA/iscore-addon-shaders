@@ -11,19 +11,10 @@
 #include <vector>
 
 class score_addon_shader final :
-        public QObject,
         public score::Plugin_QtInterface,
         public score::FactoryInterface_QtInterface,
         public score::CommandFactory_QtInterface
 {
-        Q_OBJECT
-        Q_PLUGIN_METADATA(IID FactoryInterface_QtInterface_iid)
-        Q_INTERFACES(
-                score::Plugin_QtInterface
-                score::FactoryInterface_QtInterface
-                score::CommandFactory_QtInterface
-                )
-
   SCORE_PLUGIN_METADATA(1, "0c549f8f-db48-4823-acbd-11cb9d0bc354")
 
     public:

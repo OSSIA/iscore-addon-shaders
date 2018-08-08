@@ -2,6 +2,9 @@
 #include <QOpenGLShaderProgram>
 #include <Process/Dataflow/Port.hpp>
 
+#include <wobjectimpl.h>
+W_OBJECT_IMPL(Shader::GLWindow)
+W_OBJECT_IMPL(Shader::ProcessModel)
 namespace Shader
 {
 

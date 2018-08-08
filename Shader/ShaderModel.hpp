@@ -16,12 +16,14 @@ class QOpenGLShader;
 class QOpenGLShaderProgram;
 Q_DECLARE_METATYPE(std::string)
 Q_DECLARE_METATYPE(ossia::audio_vector)
+W_REGISTER_ARGTYPE(std::string)
+W_REGISTER_ARGTYPE(ossia::audio_vector)
 namespace Shader
 {
 class ProcessModel;
 class GLWindow : public QOpenGLWindow, public QOpenGLFunctions
 {
-    Q_OBJECT
+    W_OBJECT(GLWindow)
   public:
     GLWindow(ProcessModel& m);
 
@@ -33,13 +35,11 @@ class GLWindow : public QOpenGLWindow, public QOpenGLFunctions
   void paintGL() override;
 
   QOpenGLShader* shader{};
-  Q_SIGNALS:
-    void sig_setValue(std::string, ossia::value);
-    void sig_setAudio(std::string, ossia::audio_vector);
+    void sig_setValue(std::string s, ossia::value v) W_SIGNAL(sig_setValue, s, v);
+    void sig_setAudio(std::string s, ossia::audio_vector v) W_SIGNAL(sig_setAudio, s, v);
 
-  public Q_SLOTS:
-    void slt_setValue(std::string, ossia::value);
-    void slt_setAudio(std::string, ossia::audio_vector);
+    void slt_setValue(std::string, ossia::value); W_SLOT(slt_setValue)
+    void slt_setAudio(std::string, ossia::audio_vector); W_SLOT(slt_setAudio)
 
   private:
     ProcessModel& model;
@@ -67,13 +67,12 @@ class ProcessModel final : public Process::ProcessModel
     SCORE_SERIALIZE_FRIENDS
     PROCESS_METADATA_IMPL(Shader::ProcessModel)
 
-    Q_OBJECT
-    Q_PROPERTY(QString shader READ shader WRITE setShader NOTIFY shaderChanged)
+    W_OBJECT(ProcessModel)
     public:
       ProcessModel(const TimeVal& duration,
                    const Id<Process::ProcessModel>& id,
                    QObject* parent);
-      ~ProcessModel();
+      ~ProcessModel() override;
     template<typename Impl>
     ProcessModel(Impl& vis, QObject* parent) :
       Process::ProcessModel{vis, parent}
@@ -86,11 +85,10 @@ class ProcessModel final : public Process::ProcessModel
     std::string fragment() const;
     GLWindow* window() const { return m_window; }
 
-  public Q_SLOTS:
-    void setShader(QString shader);
-  Q_SIGNALS:
-    void shaderChanged(QString shader);
+    void setShader(QString shader); W_SLOT(setShader)
+    void shaderChanged(QString shader) W_SIGNAL(shaderChanged, shader)
 
+    W_PROPERTY(QString, shader READ shader WRITE setShader NOTIFY shaderChanged)
   private:
     void init();
 

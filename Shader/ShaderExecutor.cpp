@@ -3,8 +3,8 @@
 
 #include <Explorer/DeviceList.hpp>
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
-#include <Engine/score2OSSIA.hpp>
 #include <ossia/editor/state/state_element.hpp>
+#include <ossia/dataflow/port.hpp>
 #include <QOpenGLWindow>
 namespace Shader
 {
@@ -14,11 +14,10 @@ class shader_node final :
     public:
         shader_node(
             GLWindow* w,
-            const Process::Inlets& p,
-            const Device::DeviceList&);
+            const Process::Inlets& p);
 
 
-        void run(ossia::token_request, ossia::execution_state&) override;
+        void run(ossia::token_request, ossia::exec_state_facade) noexcept override;
 
     private:
         GLWindow* m_window{};
@@ -28,8 +27,7 @@ class shader_node final :
 
 shader_node::shader_node(
     GLWindow* w,
-    const Process::Inlets& p,
-    const Device::DeviceList& devices):
+    const Process::Inlets& p):
   m_window{w}
 {
   using namespace ossia;
@@ -41,17 +39,12 @@ shader_node::shader_node(
     else
       inlet = ossia::make_inlet<audio_port>();
 
-    if(auto addr = Engine::score_to_ossia::makeDestination(devices, port->address()))
-    {
-      inlet->address = &addr->address();
-    }
-
     m_id.push_back(port->customData().toStdString());
     inputs().push_back(inlet);
   }
 }
 
-void shader_node::run(ossia::token_request t, ossia::execution_state&)
+void shader_node::run(ossia::token_request t, ossia::exec_state_facade) noexcept
 {
   m_window->sig_setValue("TIME", (float)t.position);
 
@@ -75,12 +68,12 @@ void shader_node::run(ossia::token_request t, ossia::execution_state&)
 
 ProcessExecutorComponent::ProcessExecutorComponent(
     Shader::ProcessModel& element,
-    const Engine::Execution::Context& ctx,
+    const Execution::Context& ctx,
     const Id<score::Component>& id,
     QObject* parent):
   ProcessComponent_T{element, ctx, id, "ShaderExecutorComponent", parent}
 {
-  node = std::make_shared<shader_node>(element.window(), element.inlets(), ctx.devices.list());
+  node = std::make_shared<shader_node>(element.window(), element.inlets());
   auto proc = std::make_shared<ossia::node_process>(node);
   m_ossia_process = proc;
 }

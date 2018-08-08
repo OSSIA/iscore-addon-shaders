@@ -5,7 +5,6 @@ namespace Shader
 {
 class ShaderView final : public Process::LayerView
 {
-    Q_OBJECT
     public:
         explicit ShaderView(QGraphicsItem* parent);
 
