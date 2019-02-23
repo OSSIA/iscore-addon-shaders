@@ -1,29 +1,29 @@
 #pragma once
 #include <score/command/Command.hpp>
-#include <Shader/ShaderModel.hpp>
+
 #include <Shader/ShaderCommandFactory.hpp>
+#include <Shader/ShaderModel.hpp>
 
 namespace Shader
 {
 class EditShader final : public score::Command
 {
-        SCORE_COMMAND_DECL(Shader::CommandFactoryName(), EditShader, "Edit a shader")
+  SCORE_COMMAND_DECL(Shader::CommandFactoryName(), EditShader, "Edit a shader")
 
-    public:
-        EditShader(const Shader::ProcessModel& model,
-                   QString n);
+public:
+  EditShader(const Shader::ProcessModel& model, QString n);
 
-        void undo(const score::DocumentContext& ctx) const override;
-        void redo(const score::DocumentContext& ctx) const override;
+  void undo(const score::DocumentContext& ctx) const override;
+  void redo(const score::DocumentContext& ctx) const override;
 
-    protected:
-        void serializeImpl(DataStreamInput & s) const override;
-        void deserializeImpl(DataStreamOutput & s) override;
+protected:
+  void serializeImpl(DataStreamInput& s) const override;
+  void deserializeImpl(DataStreamOutput& s) override;
 
-    private:
-        Path<ProcessModel> m_model;
-        QString m_old;
-        QString m_new;
+private:
+  Path<ProcessModel> m_model;
+  QString m_old;
+  QString m_new;
 };
 
 /*
@@ -45,9 +45,9 @@ class AddInlet final : public score::Command
 
 class SetInletData final : public score::Command
 {
-    SC ORE_COMMAND_DECL(Shader::CommandFactoryName(), SetInletData, "Set inlet data")
-    public:
-      SetInletData(const Process::ProcessModel& model, QString dat, std::size_t pos);
+    SC ORE_COMMAND_DECL(Shader::CommandFactoryName(), SetInletData, "Set inlet
+data") public: SetInletData(const Process::ProcessModel& model, QString dat,
+std::size_t pos);
 
       void undo(const score::DocumentContext& ctx) const override;
       void redo(const score::DocumentContext& ctx) const override;
@@ -65,9 +65,9 @@ class SetInletData final : public score::Command
 
 class SetInletAddress final : public score::Command
 {
-    S CORE_COMMAND_DECL(Shader::CommandFactoryName(), SetInletAddress, "Set inlet address")
-    public:
-      SetInletAddress(const Process::ProcessModel& model, State::AddressAccessor dat, std::size_t pos);
+    S CORE_COMMAND_DECL(Shader::CommandFactoryName(), SetInletAddress, "Set
+inlet address") public: SetInletAddress(const Process::ProcessModel& model,
+State::AddressAccessor dat, std::size_t pos);
 
       void undo(const score::DocumentContext& ctx) const override;
       void redo(const score::DocumentContext& ctx) const override;

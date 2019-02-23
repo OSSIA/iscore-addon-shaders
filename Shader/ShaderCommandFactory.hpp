@@ -9,7 +9,7 @@ namespace Shader
  */
 inline const CommandGroupKey& CommandFactoryName()
 {
-    static const CommandGroupKey key{"Shader"};
-    return key;
+  static const CommandGroupKey key{"Shader"};
+  return key;
 }
 }

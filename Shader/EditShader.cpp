@@ -1,39 +1,35 @@
 #include "EditShader.hpp"
+
 #include <score/model/path/PathSerialization.hpp>
 
 namespace Shader
 {
-EditShader::EditShader(
-        const Shader::ProcessModel& model
-    , QString n):
-    m_model{model}
-  , m_old{model.shader()}
-  , m_new{n}
+EditShader::EditShader(const Shader::ProcessModel& model, QString n)
+    : m_model{model}, m_old{model.shader()}, m_new{n}
 {
 }
 
 void EditShader::undo(const score::DocumentContext& ctx) const
 {
-    Shader::ProcessModel& proc = m_model.find(ctx);
-    proc.setShader(m_old);
+  Shader::ProcessModel& proc = m_model.find(ctx);
+  proc.setShader(m_old);
 }
 
 void EditShader::redo(const score::DocumentContext& ctx) const
 {
-    Shader::ProcessModel& proc = m_model.find(ctx);
-    proc.setShader(m_new);
+  Shader::ProcessModel& proc = m_model.find(ctx);
+  proc.setShader(m_new);
 }
 
 void EditShader::serializeImpl(DataStreamInput& s) const
 {
-    s << m_model << m_old << m_new;
+  s << m_model << m_old << m_new;
 }
 
 void EditShader::deserializeImpl(DataStreamOutput& s)
 {
-    s >> m_model >> m_old >> m_new;
+  s >> m_model >> m_old >> m_new;
 }
-
 
 /*
 AddInlet::AddInlet(
@@ -54,8 +50,8 @@ void AddInlet::redo(const score::DocumentContext& ctx) const
 {
   Process::ProcessModel& proc = m_model.find(ctx);
   auto inlets = proc.inlets();
-  inlets.push_back(Process::Port{Process::PortType::Message, "New port", State::AddressAccessor{}});
-  proc.setInlets(std::move(inlets));
+  inlets.push_back(Process::Port{Process::PortType::Message, "New port",
+State::AddressAccessor{}}); proc.setInlets(std::move(inlets));
 }
 
 void AddInlet::serializeImpl(DataStreamInput& s) const
